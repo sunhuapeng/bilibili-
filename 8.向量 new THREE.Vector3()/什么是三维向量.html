@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8.向量 new THREE.Vector3()</title>
+    <script src="../../three.js/build/three.js"></script>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+</body>
+<script>
+    // three.js官网  https://threejs.org
+    // git地址  https://github.com/mrdoob/three.js
+    // 场景
+    const scene = new THREE.Scene();
+    // 灯光
+    // 点光源
+    const pointLight = new THREE.PointLight(0xffffff);
+    pointLight.position.set(100, 200, 100);
+    scene.add(pointLight);
+
+    // 环境光
+    const light = new THREE.AmbientLight(0x444444); // soft white light.
+    // light.position.set(0,200,0)
+    scene.add(light);
+    // 透视相机
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const k = width / height; //窗口宽高比
+    const s = 500; //三维场景显示范围控制系数，系数越大，显示的范围越大
+    //创建相机对象
+    const camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 1000);
+    camera.position.set(100, 150, 200)
+    const axesHelper = new THREE.AxesHelper(200);
+    scene.add(axesHelper);
+    camera.lookAt(scene.position)
+
+    //   创建一个几何体
+    const geometry = new THREE.BoxGeometry(100, 100, 100);
+    const material = new THREE.MeshLambertMaterial();
+    const cube = new THREE.Mesh(geometry, material);
+    scene.add(cube);
+    
+    // cube.position.set(0,100,0)
+    
+    
+    // console.log(v3)
+    // cube.position.clone(v3)
+    // const nv3 = v3.clone()
+    // cube.position
+    // console.log('nv3', nv3)
+    // // copy 和clone 的区别
+    // const v3 = cubeP.clone()
+    // console.log(v3)
+    
+    // // 反向  negate
+    // const v3 = new THREE.Vector3(0,100,0)
+    // const negateV3 = v3.clone().negate()
+    // console.log(negateV3)
+    // cube.position.copy(negateV3)
+
+    // // 两点之间的长度 distanceTo
+
+    // const v3length = new THREE.Vector3(80,80,0)
+    // const newV3 = new THREE.Vector3(100,0,0)
+    // const l = newV3.distanceTo(v3length)
+    // const l = v3length.length()
+    // console.log('l',l)
+
+
+    
+    // // 设置长度
+    // const v3setLength = new THREE.Vector3(10,10,0)
+    // // // 方向相同，但是长度加200
+    // const vv = v3setLength.setLength(200) // v3setLength决定了他的方向，200决定了从0，0，0位置到200的长度
+    // console.log(vv)
+
+    // const length = vv.length() // 验证得到的vv是否是从 0，0，0位置开始
+    // console.log(length)
+
+    // fromArray 方法
+    // const arr = [
+    //     10,0,10,
+    //     20,0,20]
+    // const limit = 3
+    // for(let i=0; i<arr.length/limit; i++) {
+    //     const v3 = new THREE.Vector3().fromArray(arr, i * limit)
+    //     console.log(v3)
+    // }
+
+
+    // toArray 方法
+    // const v3 = new THREE.Vector3(100,0,100)
+    // const arr = []
+    // v3.toArray(arr)
+    // console.log(arr)
+    
+    // add 方法
+    // const v3 = new THREE.Vector3(100,50,-50)
+    // const nV3 = v3.clone().negate()
+    // const addV3 = v3.add(nV3)
+    // console.log(addV3)
+
+    // sub 方法
+    // const v3 = new THREE.Vector3(100,0,0)
+    // const nV3 = new THREE.Vector3(-100,0,0)
+    // const subV3 = v3.clone().sub(nV3)
+    // console.log(subV3)
+    
+    // const v3 = new THREE.Vector3(0,0,0)
+    // v3.setX(100)
+    // console.log(v3)
+
+
+    // 渲染器
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement)
+
+    renderer.render(scene, camera);
+
+
+</script>
+
+</html>

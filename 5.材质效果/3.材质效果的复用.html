@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>材质效果</title>
+    <script src="../../three.js/build/three.js"></script>
+    <script src="../../three.js/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+</body>
+<script>
+    const w = window.innerWidth, h = window.innerHeight
+    // three.js官网  https://threejs.org
+    // git地址  https://github.com/mrdoob/three.js
+    // 场景
+    const scene = new THREE.Scene();
+    // 灯光
+    // 点光源
+    const pointLight = new THREE.PointLight(0xffffff, 1);
+    pointLight.position.set(200, 500, 400);
+    scene.add(pointLight);
+    // 环境光
+    const light = new THREE.AmbientLight(0x444444); // soft white light
+    scene.add(light);
+
+    // 添加坐标轴辅助线
+    const axesHelper = new THREE.AxesHelper(200);
+    scene.add(axesHelper);
+
+    // 透视相机
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const k = width / height; //窗口宽高比
+    const s = 200; //三维场景显示范围控制系数，系数越大，显示的范围越大
+    //创建相机对象
+    const camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 1000);
+    camera.position.set(60, 60, 60)
+    camera.lookAt(scene.position)
+    // 渲染器
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.antialias = true
+    renderer.precision = 'highp'
+    renderer.alpha = true
+    renderer.powerPreference = 'high-performance'
+    document.body.appendChild(renderer.domElement)
+
+    // 定义轨道控制器
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+    function animate() {
+        renderer.render(scene, camera);
+        controls.update();
+        requestAnimationFrame(animate);
+    }
+    animate();
+    // 新建一个几何体
+    const geometry = new THREE.BoxGeometry(30, 30, 30);
+    const material = new THREE.MeshLambertMaterial({ color: 0x00ff00 });
+    const cube1 = new THREE.Mesh(geometry, material);
+    scene.add(cube1)
+    // 球体几何体
+    const geometry1 = new THREE.SphereGeometry(15, 15, 32);
+    // const material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+    // 生成球体
+    const sphere = new THREE.Mesh(geometry1, material.clone());
+    sphere.position.setX(35)
+    console.log(sphere)
+    sphere.material.color = new THREE.Color(0xffff00)
+    scene.add(sphere);
+
+
+
+
+</script>
+
+</html>

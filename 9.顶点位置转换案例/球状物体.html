@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="../../three.js/build/three.js"></script>
+    <script src="../../three.js/examples/js/controls/OrbitControls.js"></script>
+    <script type="module">
+        import { TWEEN } from '../../three.js/examples/jsm/libs/tween.module.min.js';
+
+        // const w = window.innerWidth, h = window.innerHeight
+        // three.js官网  https://threejs.org
+        // git地址  https://github.com/mrdoob/three.js
+        // 场景
+        const scene = new THREE.Scene();
+        // 灯光
+        // 点光源
+        const pointLight = new THREE.PointLight(0xffffff);
+        pointLight.position.set(200, 500, 400);
+        scene.add(pointLight);
+        // 环境光
+        const light = new THREE.AmbientLight(0x444444); // soft white light
+        scene.add(light);
+
+        // 添加坐标轴辅助线
+        const axesHelper = new THREE.AxesHelper(200);
+        scene.add(axesHelper);
+
+        // 透视相机
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        const k = width / height; //窗口宽高比
+        const s = 200; //三维场景显示范围控制系数，系数越大，显示的范围越大
+        //创建相机对象
+        const camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 1000);
+        camera.position.set(100, 100, 100)
+        camera.lookAt(scene.position)
+        // 渲染器
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement)
+
+        // 定义轨道控制器
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        function animate() {
+            renderer.render(scene, camera);
+            controls.update();
+            TWEEN.update();
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // 创建立方体
+        const h = 10
+        const limit = 10 // 模型之间的间距
+        const geometry1 = new THREE.BoxGeometry(h, h, h);
+        const material2 = new THREE.MeshLambertMaterial({ color: 0x00ff00 });
+        const cube = new THREE.Mesh(geometry1, material2);
+        // 新建一个组盛放所有立方体
+        const cubeGroup = new THREE.Group()
+        scene.add(cubeGroup) // 将组添加到场景中
+        // 创建一个球体
+        const geometry = new THREE.SphereGeometry(100, 6, 6);
+        const material = new THREE.MeshBasicMaterial({
+            color: 0xffff00,
+            wireframe: true // 以线模式观察
+        }); // 球体的材质
+        const sphere = new THREE.Mesh(geometry, material);
+        scene.add(sphere);
+        // console.log(geometry.getAttribute('position')) 
+        const attr = geometry.getAttribute('position') // 获取顶点相关的信息
+        const pArr = attr.array // 顶点信息数组
+        const itemSize = attr.itemSize // 每个顶点由几个数字组成
+        const count = attr.count // 一共有多少个顶点
+        // console.log(count)
+        const v3 = new THREE.Vector3()
+        let YOffset = 0 // 设置Y轴的偏移量
+        let y = 0, x = 0
+        for (let i = 0; i < count; i++) {
+            const nv3 = v3.clone() // 克隆生成新的三维向量
+            nv3.fromArray(pArr, i * itemSize) // 将数组中的数字设置到nv3中
+            const nCube = cube.clone() // 克隆一个新的几何体
+            nCube.position.copy(nv3) // 将几何体的位置信息设置为顶点信息
+            cubeGroup.add(nCube) // 将所有几何体添加到几何体组中
+            const qy = i % 7 // 取余
+            if (qy === 0) {
+                YOffset++ // Y轴偏移量向上添加1
+                y = YOffset * (h + limit) // y轴的值设置为偏移量*高度
+                x = 0 // 每次换行后，X归位
+            } else {
+                x = qy * (h + limit) // 设置x值
+            }
+            nCube.toV3 = new THREE.Vector3(x, y, 0)
+            // console.log(nCube)
+        }
+        setTimeout(() => {
+            cubeGroup.traverse(mesh => { // 循环组里的每一个元素
+                if (mesh.isMesh) { // 判断是否为组本身，如果是组本身 会有一个isGroup: true属性
+                    const v3 = mesh.toV3
+                    if (v3 && v3.isVector3) { // 判断目标位置是否为三维向量
+                        // 设置 新的tween运动
+                        const tween = new TWEEN.Tween(mesh.position) // 设置position为起始值
+                            .to(v3.clone()) // 设置v3为目标值
+                            .start()
+                            .onUpdate((e) => {
+                            });
+                    }
+                }
+            })
+
+        }, 1000)
+    </script>
